@@ -4,17 +4,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Automata {
+public class NFAAutomata {
 	
-	private State[] nodes;
+	private NFAState[] nodes;
 	private char[] alpha;
-	private WGraph g;
 	
-	public Automata(int numNodes, int numAlpha) {
+	public NFAAutomata(int numNodes, int numAlpha) {
 		// Create nodes
-		nodes = new State[numNodes];
+		nodes = new NFAState[numNodes];
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new State(i);
+			nodes[i] = new NFAState(i);
 		}
 		// Create edges
 		alpha = new char[numAlpha];
@@ -50,18 +49,19 @@ public class Automata {
 		//Scanner in = new Scanner(System.in);
 		//String filePath = in.nextLine();
 		System.out.println("OUT");
-		File f = new File("./graph.txt");
+		File f = new File("./graph3.txt");
 		//in.close();
 		Scanner file = new Scanner(f);
 		int numberOfNodes = Integer.parseInt(file.nextLine());
 		int numberOfAlpha = Integer.parseInt(file.nextLine());
-		Automata a = new Automata(numberOfNodes, numberOfAlpha);
+		NFAAutomata a = new NFAAutomata(numberOfNodes, numberOfAlpha);
 		int i = 0;
 		while (file.hasNext()) {
 			String line = file.nextLine();
 			a.parseLine(line, i++);
 		}
 		file.close();
+		System.out.println(a.toString());
 		//System.out.println(a.toString());
         
 	}

@@ -2,20 +2,20 @@ package automata;
 
 import java.util.ArrayList;
 
-public class State {
+public class NFAState {
 	
-	private ArrayList<Transition> transition;
+	private ArrayList<NFATransition> transition;
 	private int stateNum;
 	
-	public State(int sn) {
+	public NFAState(int sn) {
 		// Only need the number of the state to crate it
 		this.stateNum = sn;
 		transition = new ArrayList<>();
 	}
 	
-	public void setTransition(State to, char a) {
+	public void setTransition(NFAState to, char a) {
 		// Add transitions to the state
-		transition.add(new Transition(this, to, a));
+		transition.add(new NFATransition(this, to, a));
 	}
 	
 	public int getStateNum() {
@@ -23,7 +23,7 @@ public class State {
 		return this.stateNum;
 	}
 	
-	public ArrayList<Transition> getTransition() {
+	public ArrayList<NFATransition> getTransition() {
 		// Return the list of transition for graph traversal
 		return this.transition;
 	}
@@ -34,7 +34,7 @@ public class State {
 	public String toString() {
 		// For text based debugging
 		String response = "" + stateNum + " : ";
-		for (Transition t : transition) {
+		for (NFATransition t : transition) {
 			response += " " + t.toString();
 		}
 		return response + "\n";

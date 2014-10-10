@@ -1,12 +1,12 @@
 package automata;
 
-public class Transition {
+public class NFATransition {
 	
-	private State from;
-	private State to;
+	private NFAState from;
+	private NFAState to;
 	private char alpha;
 	
-	public Transition(State f, State t, char a) {
+	public NFATransition(NFAState f, NFAState t, char a) {
 		// Requires both the to and the from state just in case I want to do
 		// reverse graph searching later.
 		this.from = f;
@@ -14,12 +14,12 @@ public class Transition {
 		this.alpha = a;
 	}
 	
-	public State getFrom() {
+	public NFAState getFrom() {
 		// For graph re-transversal
 		return this.from;
 	}
 	
-	public State getTo() {
+	public NFAState getTo() {
 		// For graph transversal and display
 		return this.to;
 	}
