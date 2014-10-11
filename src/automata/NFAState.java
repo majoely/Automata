@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 public class NFAState {
 	
-	private ArrayList<NFATransition> transition;
+	private ArrayList<NFATransition> transitions;
 	private int stateNum;
 	
 	public NFAState(int sn) {
 		// Only need the number of the state to crate it
 		this.stateNum = sn;
-		transition = new ArrayList<>();
+		transitions = new ArrayList<>();
 	}
 	
-	public void setTransition(NFAState to, char a) {
+	public void addTransition(NFAState to, char a) {
 		// Add transitions to the state
-		transition.add(new NFATransition(this, to, a));
+		transitions.add(new NFATransition(this, to, a));
 	}
 	
 	public int getStateNum() {
@@ -23,9 +23,9 @@ public class NFAState {
 		return this.stateNum;
 	}
 	
-	public ArrayList<NFATransition> getTransition() {
+	public ArrayList<NFATransition> getTransitions() {
 		// Return the list of transition for graph traversal
-		return this.transition;
+		return this.transitions;
 	}
 	
 	// May add method to get individual transition
@@ -34,7 +34,7 @@ public class NFAState {
 	public String toString() {
 		// For text based debugging
 		String response = "" + stateNum + " : ";
-		for (NFATransition t : transition) {
+		for (NFATransition t : transitions) {
 			response += " " + t.toString();
 		}
 		return response + "\n";

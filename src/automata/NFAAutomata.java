@@ -30,18 +30,37 @@ public class NFAAutomata {
 				i++;
 			} else {
 				int to = Integer.parseInt(s);
-				nodes[stateNum].setTransition(nodes[to], alpha[i]);
+				nodes[stateNum].addTransition(nodes[to], alpha[i]);
 			}
 		}
 	}
 	
 	@Override
 	public String toString() {
-		String response = "";
+                StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < nodes.length; i++) {
-			response += nodes[i].toString();
+			sb.append(nodes[i].toString());
 		}
-		return response;
+		return sb.toString();
+	}
+        
+	public WGraph draw() {
+            WGraph graph = new WGraph(480, 480);
+            for (int i = 0; i < nodes.length; i++) {
+                graph.add(i);
+            }
+            for (NFAState node : nodes) {
+                for (NFATransition transition: node.getTransitions()) {
+                    int from = node.getStateNum();
+                    int to = transition.getTo().getStateNum();
+                    String label = "" + transition.getAlpha();
+                    System.out.println("From:" + from + " To:" + to + " label:" + label);
+                    if (!graph.addEdge(from, to, label)) {
+                        graph.apendLabel(from, to, label);
+                    }
+                }
+            }
+            return graph;
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
@@ -49,7 +68,7 @@ public class NFAAutomata {
 		//Scanner in = new Scanner(System.in);
 		//String filePath = in.nextLine();
 		System.out.println("OUT");
-		File f = new File("./graph3.txt");
+		File f = new File("./graph1.txt");
 		//in.close();
 		Scanner file = new Scanner(f);
 		int numberOfNodes = Integer.parseInt(file.nextLine());
@@ -62,6 +81,7 @@ public class NFAAutomata {
 		}
 		file.close();
 		System.out.println(a.toString());
+                a.draw();
 		//System.out.println(a.toString());
         
 	}
