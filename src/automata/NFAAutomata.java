@@ -35,6 +35,14 @@ public class NFAAutomata {
 		}
 	}
 	
+	public char[] getAlpha() {
+		return this.alpha;
+	}
+	
+	public NFAState[] getStates() {
+		return this.nodes;
+	}
+	
 	@Override
 	public String toString() {
                 StringBuilder sb = new StringBuilder();
@@ -68,7 +76,7 @@ public class NFAAutomata {
 		//Scanner in = new Scanner(System.in);
 		//String filePath = in.nextLine();
 		System.out.println("OUT");
-		File f = new File("./graph1.txt");
+		File f = new File("./graph2.txt");
 		//in.close();
 		Scanner file = new Scanner(f);
 		int numberOfNodes = Integer.parseInt(file.nextLine());
@@ -81,7 +89,9 @@ public class NFAAutomata {
 		}
 		file.close();
 		System.out.println(a.toString());
-                a.draw();
+        a.draw();
+        DFAAutomata b = new DFAAutomata(a);
+        System.out.println("\n" + b.toString());
 		//System.out.println(a.toString());
         
 	}

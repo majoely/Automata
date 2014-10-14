@@ -1,5 +1,7 @@
 package automata;
 
+import java.util.ArrayList;
+
 public class DFATransition {
 	
 	private DFAState to;
@@ -29,9 +31,9 @@ public class DFATransition {
 	@Override
 	public String toString() {
 		String response = " -" + this.alpha + "-> { ";
-		int[] toStates = this.to.getStates();
-		for (int i = 0; i < toStates.length; i++) {
-			response += toStates[i] + " ";
+		ArrayList<Integer> toStates = this.to.getStates();
+		for (int i = 0; i < toStates.size(); i++) {
+			response += toStates.get(i) + " ";
 		}
 		return response += "} ";
 	}
