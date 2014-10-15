@@ -52,10 +52,10 @@ public class NFAAutomata {
 		return sb.toString();
 	}
         
-	public WGraph draw() {
-            WGraph graph = new WGraph(480, 480);
+	public WGraph draw(WGraph graph) {
+            graph.clear();
             for (int i = 0; i < nodes.length; i++) {
-                graph.add(i);
+                graph.add("" + i);
             }
             for (NFAState node : nodes) {
                 for (NFATransition transition: node.getTransitions()) {
@@ -63,8 +63,8 @@ public class NFAAutomata {
                     int to = transition.getTo().getStateNum();
                     String label = "" + transition.getAlpha();
                     System.out.println("From:" + from + " To:" + to + " label:" + label);
-                    if (!graph.addEdge(from, to, label)) {
-                        graph.apendLabel(from, to, label);
+                    if (!graph.addEdge("" + from, "" + to, label)) {
+                        graph.apendLabel("" + from, "" + to, label);
                     }
                 }
             }
@@ -72,28 +72,29 @@ public class NFAAutomata {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		//System.out.print("File name: ");
-		//Scanner in = new Scanner(System.in);
-		//String filePath = in.nextLine();
-		System.out.println("OUT");
-		File f = new File("./graph2.txt");
-		//in.close();
-		Scanner file = new Scanner(f);
-		int numberOfNodes = Integer.parseInt(file.nextLine());
-		int numberOfAlpha = Integer.parseInt(file.nextLine());
-		NFAAutomata a = new NFAAutomata(numberOfNodes, numberOfAlpha);
-		int i = 0;
-		while (file.hasNext()) {
-			String line = file.nextLine();
-			a.parseLine(line, i++);
-		}
-		file.close();
-		System.out.println(a.toString());
-        a.draw();
-        DFAAutomata b = new DFAAutomata(a);
-        System.out.println("\n" + b.toString());
-		//System.out.println(a.toString());
-        
+            //System.out.print("File name: ");
+            //Scanner in = new Scanner(System.in);
+            //String filePath = in.nextLine();
+            System.out.println("OUT");
+            File f = new File("./graph2.txt");
+            //in.close();
+            Scanner file = new Scanner(f);
+            int numberOfNodes = Integer.parseInt(file.nextLine());
+            int numberOfAlpha = Integer.parseInt(file.nextLine());
+            NFAAutomata a = new NFAAutomata(numberOfNodes, numberOfAlpha);
+            int i = 0;
+            while (file.hasNext()) {
+                    String line = file.nextLine();
+                    a.parseLine(line, i++);
+            }
+            file.close();
+            System.out.println(a.toString());
+            WGraph graph = new WGraph(480, 480);
+            //a.draw(graph);
+            DFAAutomata b = new DFAAutomata(a);
+            b.draw(graph);
+            System.out.println("\n" + b.toString());
+            //System.out.println(a.toString());
 	}
 	
 }

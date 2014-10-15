@@ -30,12 +30,9 @@ public class DFATransition {
 	
 	@Override
 	public String toString() {
-		String response = " -" + this.alpha + "-> { ";
-		ArrayList<Integer> toStates = this.to.getStates();
-		for (int i = 0; i < toStates.size(); i++) {
-			response += toStates.get(i) + " ";
-		}
-		return response += "} ";
+		String response = " -" + alpha + "-> ";
+                response += "{ " + to.getStateName() +" }";
+		return response;
 	}
 
 }

@@ -70,6 +70,25 @@ public class DFAAutomata {
 			}
 		}
 	}
+        
+        public WGraph draw(WGraph graph) {
+            graph.clear();
+            graph.pauseDrawing();
+            for (DFAState node : nodes) {
+                
+                for (DFATransition transition: node.getTransitions()) {
+                    
+                    String from = transition.getFrom().getStateName();
+                    String to = transition.getTo().getStateName();
+                    graph.add(from);
+                    graph.add(to);
+                    
+                    graph.addEdge(from, to, "" + transition.getAlpha());
+                }
+            }
+            graph.startDrawing();
+            return graph;
+	}
 	
 	private DFAState exists(ArrayList<Integer> n) {
 		//this needs to be implemented

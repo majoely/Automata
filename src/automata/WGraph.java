@@ -29,31 +29,33 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
 
     private int barb; //size of an arrow edge
     private double phi; //angle of an arrow edge
-    private Integer moveNode; //the node the user is moving on the GUI
-    private Integer selectedNode; // the node selected
+    private String moveNode; //the node the user is moving on the GUI
+    private String selectedNode; // the node selected
     public final static int CIRCLEDIAMETER = 40; //Diameter of the nodes
     
     private static Color colorLine = Color.black;
     private static Color colorArrow = Color.black;
+    
+    private boolean stopDrawing = false;
 
     // This is the adjacency list representation of the digraph
     // The nodes are denoted here as Integers
     // Each node is associated with a list of Integers, which indicates its out-neighbours
-    private HashMap<Integer, HashMap<Integer,String>> data;
+    private HashMap<String, HashMap<String,String>> data;
 
-    private HashMap<Integer, Node> nodeList;
+    private HashMap<String, Node> nodeList;
 
     // The collection of node in the graph
     // This set is the key set of data
-    private Set<Integer> nodeSet;
+    private Set<String> nodeSet;
 
     // The textfield used for user to specify commands
     private JTextField tf;
 
     // The Constructor
     public WGraph() {
-        data = new HashMap<Integer, HashMap<Integer, String>>();
-        nodeList = new HashMap<Integer, Node>();
+        data = new HashMap<String, HashMap<String, String>>();
+        nodeList = new HashMap<String, Node>();
         nodeSet=data.keySet();
 
         JPanel panel = new JPanel();
@@ -67,8 +69,8 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
         setLayout(new BorderLayout());
         add(panel, BorderLayout.NORTH);
         add(tf, BorderLayout.SOUTH);
-        moveNode = -1; 			// Initial values of moveNode is -1
-        selectedNode=-1;			// Initial values of moveNode is -1
+        moveNode = null; 			// Initial values of moveNode is -1
+        selectedNode = null;			// Initial values of moveNode is -1
     }
 
     public WGraph(int width, int height) {
@@ -80,20 +82,28 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
         frame.getContentPane().add(this);
         frame.setVisible(true);
     }
+    
+    public void pauseDrawing() {
+        stopDrawing = true;
+    }
+    
+    public void startDrawing() {
+        stopDrawing = false;
+    }
 
     /**
       * The method adds a node to the diagraph, labeled by the int value node
       */
-    public void add(int node){
+    public void add(String node){
         // If the label node is already in the digraph, do nothing and return
-        if(data.containsKey((Integer)node)) {
+        if(data.containsKey(node)) {
             System.err.println("Node not added i:" + node);
             return;
         }
         // Create a new linked list
-        HashMap<Integer,String> list = new HashMap<Integer,String>();
+        HashMap<String,String> list = new HashMap<String,String>();
         // Add a new entry to the adjacency list
-        data.put((Integer)node, list);
+        data.put(node, list);
 
         // Create a new node in the GUI
         // Set a random initial position
@@ -101,15 +111,15 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
         Node nodeVisual = new Node(node);
         nodeVisual.xpos = 50 +(int) (Math.random() * 320);
         nodeVisual.ypos = 50 +(int) (Math.random() * 320);
-        nodeList.put((Integer)node, nodeVisual);
+        nodeList.put(node, nodeVisual);
     }
     
-    private boolean conatainNodes(int node1, int node2) {
-        if (!data.containsKey((Integer)node1)) {
+    private boolean conatainNodes(String node1, String node2) {
+        if (!data.containsKey(node1)) {
             System.err.println("Node:"+node1+" doesn't exist");
             return false;
         }
-        if (!data.containsKey((Integer)node2)) {
+        if (!data.containsKey(node2)) {
             System.err.println("Node:"+node2+" doesn't exist");
             return false;
         }
@@ -124,20 +134,20 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
       * @param target of the edge is labeled node2
       * @param label of the edge is weight
       */
-    public boolean addEdge(int source, int target, String label){
+    public boolean addEdge(String source, String target, String label){
         if (!conatainNodes(source, target)) {
             return false;
         }
-        HashMap<Integer,String> list = data.get((Integer)source);
-        if(list.containsKey((Integer)target)) {
+        HashMap<String,String> list = data.get(source);
+        if(list.containsKey(target)) {
             return false;
         } else {
-            list.put((Integer)target, label);
+            list.put(target, label);
             return true;
         }
     }
     
-    public void addEdge(int node1, int node2, double weight){
+    public void addEdge(String node1, String node2, double weight){
         addEdge(node1, node2, "" + weight);
     }
 
@@ -156,7 +166,7 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
             String output;
             for(int i=0;i<numNodes;i++)
             {
-                add(i);
+                add("" + i);
             }
             int col = 0;
             String st="";
@@ -167,7 +177,7 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
                    while (token.hasMoreTokens()) {
                         st = token.nextToken();
                         if (!st.equals("#"))
-                            addEdge(i,col,st);
+                            addEdge("" + i,"" + col,st);
                         col++;
                    }
                    col=0;
@@ -187,13 +197,13 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
       * The target of the edge is labeled node2
       *
       */
-    public void removeEdge(int node1, int node2){
-            if (!data.containsKey((Integer)node1) || !data.containsKey((Integer)node2)) {
+    public void removeEdge(String node1, String node2){
+            if (!data.containsKey(node1) || !data.containsKey(node2)) {
                 return;
             }
-            HashMap<Integer,String> list = data.get((Integer)node1);
-            if(list.containsKey((Integer)node2)) {
-                list.remove((Integer)node2);
+            HashMap<String,String> list = data.get(node1);
+            if(list.containsKey(node2)) {
+                list.remove(node2);
             }
     }
 
@@ -203,13 +213,13 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
       * Do nothing if the edge does not exist in the graph
       *
       */
-    public void changeWeight(int node1, int node2, double weight) {
+    public void changeWeight(String node1, String node2, double weight) {
         if (!conatainNodes(node1, node2)) {
             return;
         }
-        HashMap<Integer,String> list = data.get((Integer)node1);
-        if(list.containsKey((Integer)node2)) {
-            list.put((Integer)node2, "" + weight);
+        HashMap<String,String> list = data.get(node1);
+        if(list.containsKey(node2)) {
+            list.put(node2, "" + weight);
         }
     }
     
@@ -218,14 +228,14 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
       * Do nothing if the edge does not exist in the graph
       *
       */
-    public void apendLabel(int source, int target, String label) {
+    public void apendLabel(String source, String target, String label) {
         if (!conatainNodes(source, target)) {
             return;
         }
-        HashMap<Integer,String> list = data.get((Integer)source);
-        if(list.containsKey((Integer)target)) {
-            String current = list.get((Integer)target);
-            list.put((Integer)target, current + "," + label);
+        HashMap<String,String> list = data.get(source);
+        if(list.containsKey(target)) {
+            String current = list.get(target);
+            list.put(target, current + "," + label);
         }
     }
 
@@ -234,19 +244,19 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
       * You need to complete this method
       * It should do nothing if the node is not contained in the digraph
       */
-    public void remove(int node){
-        if (!data.containsKey((Integer)node)) {
+    public void remove(String node){
+        if (!data.containsKey(node)) {
             return;
         }
-        HashMap<Integer,String> list;
-        for (Integer i: nodeSet) {
-            list = data.get((Integer)i);
-            if(list.containsKey((Integer)node)) {
-                list.remove((Integer)node);
+        HashMap<String,String> list;
+        for (String name: nodeSet) {
+            list = data.get(name);
+            if(list.containsKey(node)) {
+                list.remove(node);
             }
         }
-        data.remove((Integer)node);
-        nodeList.remove((Integer)node);
+        data.remove(node);
+        nodeList.remove(node);
     }
 
     /**
@@ -275,26 +285,26 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
         int n=graphOrder();
 
         // the HashMap associates an index in [0..n-1] with a node label
-        HashMap<Integer,Integer> labels = new HashMap<Integer,Integer>();
+        HashMap<Integer,String> labels = new HashMap<Integer,String>();
 
         // the adjacency matrix of the digraph, where the node indices in
         // the matrix are indicated by the labels HashMap
         String[][] adjMatrix = new String[n][n];
 
-        HashMap<Integer,String> list;
+        HashMap<String,String> list;
         int row=0;
         int column=0;
         int index=0;
 
-        for (Integer i: nodeSet){
-            labels.put((Integer) index, (Integer)i);
+        for (String name: nodeSet){
+            labels.put(index, name);
             index++;
         }
         for (int i=0;i<n;i++){
-            list = data.get(labels.get((Integer)i));
+            list = data.get(labels.get(i));
             for (int j=0; j<n; j++){
-                if(list.containsKey(labels.get((Integer)j)))
-                    adjMatrix[i][j]=""+list.get(labels.get((Integer)j));
+                if(list.containsKey(labels.get(j)))
+                    adjMatrix[i][j]=""+list.get(labels.get(j));
                 else
                     adjMatrix[i][j]="#";
             }
@@ -307,13 +317,13 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
 
         System.out.print(""+'\t');
         for (int i=0;i<n;i++){
-            System.out.print(""+labels.get((Integer)i)+'\t');
+            System.out.print(""+labels.get(i)+'\t');
         }
         System.out.print(""+'\n');
 
 
         for (int i=0; i<n;i++){
-            System.out.print(""+labels.get((Integer)i));
+            System.out.print(""+labels.get(i));
             for (int j=0; j<n;j++){
                 System.out.print('\t'+adjMatrix[i][j]);
             }
@@ -344,8 +354,8 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
 
         StringTokenizer st = new StringTokenizer(command);
 
-        String token,opt;
-        Integer node1, node2;
+        String token, opt;
+        String node1, node2;
         if(st.hasMoreTokens()) {
             token = st.nextToken();
             token=token.toLowerCase();
@@ -366,14 +376,14 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
                         opt=st.nextToken();
                         opt=opt.toLowerCase();
                         if(opt.equals("edge")){
-                            node1 = Integer.parseInt(st.nextToken());
-                            node2 = Integer.parseInt(st.nextToken());
+                            node1 = st.nextToken();
+                            node2 = st.nextToken();
                             double weight = Double.parseDouble(st.nextToken());
                             if(st.hasMoreTokens()) break;
                             addEdge(node1,node2,weight);
                         }
                         else if(opt.equals("node")){
-                            node1 = Integer.parseInt(st.nextToken());
+                            node1 = st.nextToken();
                             if(st.hasMoreTokens()) break;
                             add(node1);
                         }
@@ -387,13 +397,13 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
                         opt=st.nextToken();
                         opt=opt.toLowerCase();
                         if(opt.equals("edge")){
-                            node1 = Integer.parseInt(st.nextToken());
-                            node2 = Integer.parseInt(st.nextToken());
+                            node1 = st.nextToken();
+                            node2 = st.nextToken();
                             if(st.hasMoreTokens()) break;
                             removeEdge(node1,node2);
                         }
                         else if(opt.equals("node")){
-                            node1 = Integer.parseInt(st.nextToken());
+                            node1 = st.nextToken();
                             if(st.hasMoreTokens()) break;
                             remove(node1);
                         }
@@ -405,8 +415,8 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
                         opt=st.nextToken();
                         opt=opt.toLowerCase();
                         if(opt.equals("weight")){
-                            node1 = Integer.parseInt(st.nextToken());
-                            node2 = Integer.parseInt(st.nextToken());
+                            node1 = st.nextToken();
+                            node2 = st.nextToken();
                             double w = Double.parseDouble(st.nextToken());
                             if (st.hasMoreTokens()) break;
                             changeWeight(node1,node2,w);
@@ -462,36 +472,38 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        //clear the previous screen
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, 1500, 1500);
-        g2d.setColor(Color.BLACK);
+        if (!stopDrawing) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            //clear the previous screen
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, 1500, 1500);
+            g2d.setColor(Color.BLACK);
 
-        HashMap<Integer,String> outNeighbours;
+            HashMap<String,String> outNeighbours;
 
-        for (Integer i : nodeSet){
-            if(selectedNode==i) {
-                nodeList.get(i).draw(g, Color.RED);
-            } else {
-                nodeList.get(i).draw(g, Color.BLACK);
-            }
-            outNeighbours = data.get(i);
-            for (Integer j : nodeSet){
-                if(outNeighbours.containsKey(j)) {
-                    if (i == j) {
-                        drawLoop(j, g, outNeighbours.get(j));
-                    } else {
-                        drawEdge(i,j,g,outNeighbours.get(j));
+            for (String node1 : nodeSet){
+                if(selectedNode==node1) {
+                    nodeList.get(node1).draw(g, Color.RED);
+                } else {
+                    nodeList.get(node1).draw(g, Color.BLACK);
+                }
+                outNeighbours = data.get(node1);
+                for (String node2 : nodeSet){
+                    if(outNeighbours.containsKey(node2)) {
+                        if (node1 == node2) {
+                            drawLoop(node2, g, outNeighbours.get(node2));
+                        } else {
+                            drawEdge(node1,node2,g,outNeighbours.get(node2));
+                        }
                     }
                 }
             }
         }
     }
     
-    public void drawLoop(Integer node, Graphics g, String label) {
+    public void drawLoop(String node, Graphics g, String label) {
         
         float radius = (float)CIRCLEDIAMETER/2.0f;
         int delta = (int)Math.sqrt((radius*radius)/2);
@@ -511,7 +523,7 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
    /**
     * Draw a directed edge between 2 nodes with the specific color for the line and the arrow.
     */
-    public void drawEdge(Integer node1, Integer node2, Graphics g, String label) {
+    public void drawEdge(String node1, String node2, Graphics g, String label) {
 
         int startX = nodeList.get(node1).getEdgeX(nodeList.get(node2));
         int startY = nodeList.get(node1).getEdgeY(nodeList.get(node2));
@@ -588,7 +600,7 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
     //				to the selected node by clicking another node
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (moveNode >= 0) {
+        if (moveNode != null) {
             Node node = nodeList.get(moveNode);
             node.xpos = e.getPoint().x;
             node.ypos = e.getPoint().y;
@@ -604,35 +616,35 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
     public void mouseClicked(MouseEvent e) {
         Node node;
         boolean onNode=false;
-        Integer clicked=-1;
-        for (Integer i: nodeSet) {
-            node=nodeList.get(i);
+        String clicked = null;
+        for (String name: nodeSet) {
+            node=nodeList.get(name);
             //Calculate the distance to the center of a node
             double distance = Math.sqrt(Math.pow((e.getX()-node.xpos), 2)+Math.pow((e.getY()-node.ypos), 2));
             if (distance<=(1.0*CIRCLEDIAMETER/2)) {
                 onNode=true;
-                clicked = i;
+                clicked = name;
             }
         }
         if (onNode){
-            if (selectedNode == -1) {
-                    selectedNode=clicked;
+            if (selectedNode == null) {
+                    selectedNode = clicked;
             } else {
                 if (clicked.equals(selectedNode)){
-                    selectedNode=-1;
+                    selectedNode = null;
                 } else {
-                    addEdge(selectedNode,clicked,1);
-                    selectedNode=-1;
+                    addEdge(selectedNode , clicked , 1);
+                    selectedNode = null;
                 }
             }
         }
         if (!onNode) {
-            int newNode =0;
-            while(nodeSet.contains((Integer)newNode)) {
+            int newNode = 0;
+            while(nodeSet.contains(newNode)) {
                 newNode++;
             }
-            add((Integer)newNode);
-            selectedNode=newNode;
+            add("" + newNode);
+            selectedNode= "" + newNode;
         }
       	repaint();
     }
@@ -640,19 +652,19 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
     @Override
     public void mousePressed(MouseEvent e) {
         Node node;
-        for (Integer i: nodeSet) {
-            node=nodeList.get(i);
+        for (String name: nodeSet) {
+            node = nodeList.get(name);
             //Calculate the distance to the center of a node
             double distance=Math.sqrt(Math.pow((e.getX()-node.xpos), 2)+Math.pow((e.getY()-node.ypos), 2));
             if (distance<=(1.0*CIRCLEDIAMETER/2)) {
-                moveNode = i;
+                moveNode = name;
             }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        moveNode = -1;
+        moveNode = null;
     }
 
     @Override
@@ -668,15 +680,15 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
 
         public int xpos;
         public int ypos;
-        public int nodeNum;
+        public String nodeName;
         public int inEdges, arraySpot;
 
         int dirX, dirY;
 
-        public Node(int num) {
+        public Node(String name) {
             xpos = 0;
             ypos = 0;
-            nodeNum = num;
+            nodeName = name;
             inEdges = 0;
             arraySpot = 0;
             
@@ -698,8 +710,8 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
         }
 
         // returns the label of the node
-        public int label(){
-            return nodeNum;
+        public String label(){
+            return nodeName;
         }
 
         // compute the x coordinate of the source of the edge from this to the specified node
@@ -735,7 +747,7 @@ public class WGraph extends JPanel implements MouseMotionListener, MouseListener
             g2d.setColor(color);
             g2d.drawOval(xpos-(CIRCLEDIAMETER / 2), ypos-(CIRCLEDIAMETER / 2), CIRCLEDIAMETER, CIRCLEDIAMETER);
             g2d.setColor(Color.BLUE);
-            g2d.drawString("" + nodeNum, xpos-3, ypos+4 );
+            g2d.drawString("" + nodeName, xpos-3, ypos+4 );
             g2d.setColor(Color.BLACK);
         }
 

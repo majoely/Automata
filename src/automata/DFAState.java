@@ -21,6 +21,18 @@ public class DFAState {
 	public ArrayList<Integer> getStates() {
 		return this.states;
 	}
+        
+        public String getStateName() {
+            StringBuilder sb = new StringBuilder();
+            for (Integer state: states) {
+                sb.append(state);
+                sb.append(" ");
+            }
+            if (sb.length() == 0) {
+                return "";
+            }
+            return sb.substring(0, sb.length()-1);
+        }
 	
 	public DFATransition[] getTransitions() {
 		return this.transitions;
@@ -28,18 +40,10 @@ public class DFAState {
 	
 	@Override
 	public String toString() {
-		String response = "{ ";
-		for (int i = 0; i < this.states.size(); i++) {
-			response += this.states.get(i) + " ";
-		}
-		response += "} ";
+		String response = "{ " + getStateName() + " }";
+                
 		for (int i = 0; i < this.transitions.length; i++) {
-			if (this.transitions[i] != null) {
-				response += this.transitions[i].toString();
-			} else {
-				char c = (char) (97 + i);
-				response += " -" + c + "-> {null}";
-			}
+                    response += this.transitions[i].toString();
 		}
 		return response;
 	}
