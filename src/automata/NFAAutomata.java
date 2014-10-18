@@ -9,20 +9,37 @@ public class NFAAutomata {
 	private NFAState[] nodes;
 	private char[] alpha;
 	
-	public NFAAutomata(int numNodes, int numAlpha) {
-		// Create nodes
-		nodes = new NFAState[numNodes];
-		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new NFAState(i);
-		}
-		// Create edges
-		alpha = new char[numAlpha];
-		for (int i = 0; i < numAlpha; i++) {
-			alpha[i] = (char) (i + 97);
-		}
+	private void setStates(int numStates) {
+            // Create nodes
+            nodes = new NFAState[numStates];
+            for (int i = 0; i < nodes.length; i++) {
+                    nodes[i] = new NFAState(i);
+            }
 	}
+        
+        private void setAlphabet(int numAlpha) {
+            // Create edges
+            alpha = new char[numAlpha];
+            for (int i = 0; i < numAlpha; i++) {
+                    alpha[i] = (char) (i + 97);
+            }
+	}
+        
+        public NFAAutomata(File file) throws FileNotFoundException {
+            Scanner sc = new Scanner(file);
+            int numberOfStates = Integer.parseInt(sc.nextLine());
+            int numberOfAlpha = Integer.parseInt(sc.nextLine());
+            setStates(numberOfStates);
+            setAlphabet(numberOfAlpha);
+            int i = 0;
+            while (sc.hasNext()) {
+                String line = sc.nextLine();
+                parseLine(line, i++);
+            }
+            sc.close();
+        }
 	
-	public void parseLine(String line, int stateNum) {
+	private void parseLine(String line, int stateNum) {
 		String[] edges = line.split(" ");
 		int i = 0;
 		for (String s : edges) {
@@ -74,20 +91,11 @@ public class NFAAutomata {
 	public static void main(String[] args) throws FileNotFoundException {
             //System.out.print("File name: ");
             //Scanner in = new Scanner(System.in);
-            //String filePath = in.nextLine();
+            //String filePath = in.nsextLine();
             System.out.println("OUT");
             File f = new File("./graph2.txt");
-            //in.close();
-            Scanner file = new Scanner(f);
-            int numberOfNodes = Integer.parseInt(file.nextLine());
-            int numberOfAlpha = Integer.parseInt(file.nextLine());
-            NFAAutomata a = new NFAAutomata(numberOfNodes, numberOfAlpha);
-            int i = 0;
-            while (file.hasNext()) {
-                    String line = file.nextLine();
-                    a.parseLine(line, i++);
-            }
-            file.close();
+            //in.close();=
+            NFAAutomata a = new NFAAutomata(f);
             System.out.println(a.toString());
             WGraph graph = new WGraph(480, 480);
             //a.draw(graph);
