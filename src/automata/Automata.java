@@ -113,6 +113,9 @@ public class Automata extends javax.swing.JFrame {
                 DFAtoNFAActionPerformed(null);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Automata.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NullPointerException ex) {
+                disableNFAandDFA();
+                System.out.println("File failed to load");
             }
         }
     }//GEN-LAST:event_OpenActionPerformed
