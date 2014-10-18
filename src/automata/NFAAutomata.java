@@ -25,7 +25,7 @@ public class NFAAutomata {
             }
 	}
         
-        public NFAAutomata(File file) throws FileNotFoundException {
+        public NFAAutomata(File file) throws FileNotFoundException, NumberFormatException {
             Scanner sc = new Scanner(file);
             int numberOfStates = Integer.parseInt(sc.nextLine());
             int numberOfAlpha = Integer.parseInt(sc.nextLine());

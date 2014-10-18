@@ -111,11 +111,15 @@ public class Automata extends javax.swing.JFrame {
             try {
                 nfa = new NFAAutomata(file);
                 DFAtoNFAActionPerformed(null);
-            } catch (FileNotFoundException ex) {
+            }  catch (FileNotFoundException ex) {
                 Logger.getLogger(Automata.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NullPointerException ex) {
                 disableNFAandDFA();
                 System.out.println("File failed to load");
+            } catch (NumberFormatException e) {
+            	System.out.println("File is corrupt (number is a letter)");
+            } catch (Exception e) {
+            	System.out.println("File is corrupt (not sure why)");
             }
         }
     }//GEN-LAST:event_OpenActionPerformed
