@@ -105,7 +105,7 @@ public class Automata extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void OpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenActionPerformed
-        JFileChooser fc = new JFileChooser();
+        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             try {
